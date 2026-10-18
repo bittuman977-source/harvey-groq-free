@@ -45,6 +45,7 @@ jobs:
       - name: Preflight — is the business config filled in?
         id: config
         run: |
+          pip install -q pyyaml
           python3 - <<'EOF'
           import yaml
           cfg = yaml.safe_load(open("harvey.yaml"))
