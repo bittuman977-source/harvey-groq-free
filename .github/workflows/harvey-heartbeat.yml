@@ -47,18 +47,17 @@ jobs:
         run: |
           pip install -q pyyaml
           python3 - <<'EOF'
-          import yaml
+          import os, yaml
           cfg = yaml.safe_load(open("harvey.yaml"))
           persona = (cfg.get("persona") or {})
           product = (cfg.get("product") or {})
           placeholders = [persona.get("company") == "Your Company",
                          not str(product.get("description", "")).strip(),
                          "Describe what" in str(product.get("description", ""))]
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              out.write("skip=" + ("true" if any(placeholders) else "false") + "\n")
           if any(placeholders):
-              print("skip=true")
               print("::warning::Harvey is hosted and ready, but harvey.yaml still has placeholder business info (company/product). Fill persona + product in harvey.yaml and cycles will run for real.")
-          else:
-              print("skip=false")
           EOF
 
       - name: Install Harvey
