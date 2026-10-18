@@ -82,6 +82,20 @@ jobs:
             echo "SERPER_API_KEY not set — scout falls back to free search engines (often blocked on datacenter IPs)."
           fi
 
+          # Gmail SMTP (App Password) — sending + IMAP reply checking.
+          # Hosts are Gmail's public servers; only the App Password is secret.
+          if [ -n "${{ secrets.SMTP_USERNAME }}" ] && [ -n "${{ secrets.SMTP_PASSWORD }}" ]; then
+            sed -i "s|^SMTP_HOST=.*|SMTP_HOST=smtp.gmail.com|" .env
+            sed -i "s|^SMTP_PORT=.*|SMTP_PORT=587|" .env
+            sed -i "s|^SMTP_USERNAME=.*|SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}|" .env
+            sed -i "s|^SMTP_PASSWORD=.*|SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}|" .env
+            sed -i "s|^IMAP_HOST=.*|IMAP_HOST=imap.gmail.com|" .env
+            sed -i "s|^IMAP_PORT=.*|IMAP_PORT=993|" .env
+            echo "SMTP creds present — sender will send via Gmail SMTP."
+          else
+            echo "SMTP secrets not set — outbox will hold drafts."
+          fi
+
       - name: Run one heartbeat cycle
         if: steps.config.outputs.skip != 'true'
         run: harvey run --cycles 1

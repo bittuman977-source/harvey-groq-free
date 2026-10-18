@@ -2,7 +2,7 @@ persona:
   name: Harvey
   company: Northform Agency
   role: Business Development
-  email: hello@northform.agency
+  email: snarware58@gmail.com
   linkedin: linkedin.com/company/northform
   tone: professional, consultative, friendly, confident
 product:
@@ -73,9 +73,9 @@ icp:
 channels:
   email:
     enabled: true
-    provider: gmail
+    provider: smtp
     max_daily_sends: 50
-    require_approval: true
+    require_approval: false
     send_to_risky: false
     max_bounce_rate: 0.05
   linkedin:
