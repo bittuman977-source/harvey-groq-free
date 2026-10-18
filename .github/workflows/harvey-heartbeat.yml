@@ -99,6 +99,8 @@ jobs:
       - name: Run one heartbeat cycle
         timeout-minutes: 10
         if: steps.config.outputs.skip != 'true'
+        env:
+          PYTHONUNBUFFERED: "1"
         run: harvey run --cycles 1
 
       - name: Persist state (commit the DB back)
