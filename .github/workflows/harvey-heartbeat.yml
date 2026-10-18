@@ -97,6 +97,7 @@ jobs:
           fi
 
       - name: Run one heartbeat cycle
+        timeout-minutes: 10
         if: steps.config.outputs.skip != 'true'
         run: harvey run --cycles 1
 

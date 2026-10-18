@@ -96,7 +96,7 @@ class SmtpImapProvider(MailProvider):
 
     def _fetch_unseen(self, limit: int) -> list[InboundMessage]:
         out: list[InboundMessage] = []
-        conn = imaplib.IMAP4_SSL(self.imap_host, self.imap_port)
+        conn = imaplib.IMAP4_SSL(self.imap_host, self.imap_port, timeout=60)
         try:
             conn.login(self.imap_user, self.imap_pass)
             conn.select("INBOX")
@@ -172,7 +172,7 @@ class SmtpImapProvider(MailProvider):
         loop = asyncio.get_event_loop()
 
         def _imap_check():
-            conn = imaplib.IMAP4_SSL(self.imap_host, self.imap_port)
+            conn = imaplib.IMAP4_SSL(self.imap_host, self.imap_port, timeout=60)
             try:
                 conn.login(self.imap_user, self.imap_pass)
             finally:
