@@ -1,46 +1,72 @@
 persona:
   name: Harvey
-  company: Your Company
+  company: Northform Agency
   role: Business Development
-  email: harvey@yourcompany.com
-  linkedin: linkedin.com/in/harvey-yourcompany
-  tone: professional, consultative, confident
+  email: hello@northform.agency
+  linkedin: linkedin.com/company/northform
+  tone: professional, consultative, friendly, confident
 product:
-  name: Your Product
-  description: Describe what your product does and who it's for
-  pricing: Starting at $X/mo
+  name: Northform Agency - Web Design, Automation & Graphic Design
+  description: 'Northform is a full-service digital agency that builds fast, modern,
+    conversion-focused websites, sets up business/workflow automation (CRM, forms,
+    lead flows, integrations, AI-powered workflows), and creates brand-grade graphic
+    design (logos, social media creatives, marketing collateral). Best fit: small
+    and mid-size businesses and startups that need an agency-quality web presence
+    and streamlined operations without hiring in-house designers or developers.'
+  pricing: Custom project quotes; websites typically start at $599 (about INR 50k);
+    retainer options available
   key_benefits:
-  - Benefit 1
-  - Benefit 2
-  - Benefit 3
+  - Agency-quality website that turns visitors into customers
+  - Automation that removes repetitive manual work (lead capture, follow-ups, CRM
+    sync)
+  - Premium graphic design that makes the brand look established
+  - One team for web + automation + design instead of three vendors
+  - Fast turnaround and clear communication
   objection_responses:
-    too expensive: I understand budget is important. Most of our clients see ROI within
-      30 days...
-    already have a solution: "That makes sense. Curious \u2014 what's the one thing\
-      \ you wish it did better?"
-    not interested: No worries at all. Mind if I ask what your current approach looks
-      like?
+    too expensive: Totally understand. Most clients recover the cost through the extra
+      leads and saved manual hours within the first couple of months - happy to scope
+      a smaller starter project first.
+    already have a solution: That's great - curious, what's the one thing you wish
+      it did better? Many clients keep their current site and just add automation
+      on top.
+    not interested: No problem at all - mind if I ask what your current setup looks
+      like? If it's working, I'll be the first to say stay put.
   offer:
-    primary: ''
-    entry: ''
+    primary: Free 15-minute consultation + free website/automation audit of your current
+      setup
+    entry: Free website & automation audit (no obligation)
     goal: book_call
     booking_method: calendar_link
     booking_url: ''
     meeting_duration: 15 minutes
-    meeting_owner: ''
+    meeting_owner: Northform team
 icp:
   industries:
-  - SaaS
-  - Marketing Agency
-  company_size: 10-200 employees
+  - Small Business
+  - Startups
+  - E-commerce
+  - Professional Services
+  - Real Estate
+  - Healthcare Clinics
+  - Coaching & Education
+  company_size: 1-50 employees
   titles:
-  - VP Marketing
-  - Head of Growth
-  - CMO
-  - Director of Marketing
+  - Founder
+  - Co-Founder
+  - CEO
+  - Owner
+  - Marketing Manager
+  - Operations Manager
   geography:
   - United States
-  hiring_signals: []
+  - United Kingdom
+  - India
+  hiring_signals:
+  - recently launched
+  - raising funding
+  - hiring marketing or operations roles
+  - outdated website
+  - no online booking
 channels:
   email:
     enabled: true
@@ -55,11 +81,11 @@ channels:
     max_daily_messages: 10
 usage:
   max_daily_claude_percent: 80
-  heartbeat_interval_minutes: 15
+  heartbeat_interval_minutes: 30
   quiet_hours:
     start: '22:00'
     end: 07:00
-    timezone: America/New_York
+    timezone: Asia/Calcutta
 compliance:
   precleared:
     enabled: false

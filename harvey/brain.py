@@ -150,6 +150,14 @@ class Brain:
                 return reason
             if self.unavailable:
                 await self._mark_available()
+            else:
+                # A fresh process starts with unavailable="" — a stale
+                # "paused" record from an earlier process would otherwise
+                # sit in the DB forever and misreport in `harvey status`.
+                stored = active_brain_status(
+                    await self.state.get_setting(BRAIN_STATUS_KEY), self.provider)
+                if stored and stored.get("status") != "ok":
+                    await self._record_status("ok", "")
             return ""
         if self.provider != "codex":
             return ""

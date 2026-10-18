@@ -192,3 +192,20 @@ async def test_brain_budget_falls_back_to_call_count():
     assert await brain.is_within_budget(max_daily_calls=200) is True
     brain.state.calls = 500
     assert await brain.check_usage() == 500
+
+
+@pytest.mark.asyncio
+async def test_stale_pause_cleared_when_key_present():
+    """A "paused" record from an earlier process (no key then, key now) must
+    not linger in the DB misreporting in `harvey status`."""
+    import json
+    from harvey.brain import BRAIN_STATUS_KEY
+    brain = make_brain(make_transport())
+    brain.state.settings[BRAIN_STATUS_KEY] = json.dumps({
+        "provider": "groq", "status": "paused",
+        "reason": "GROQ_API_KEY is not set", "since": "2026-01-01T00:00:00Z",
+    })
+    assert await brain.preflight() == ""
+    stored = json.loads(brain.state.settings[BRAIN_STATUS_KEY])
+    assert stored["status"] == "ok"
+    assert brain.paused_reason == ""
