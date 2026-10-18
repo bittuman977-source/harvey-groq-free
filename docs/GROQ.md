@@ -16,11 +16,13 @@ ChatGPT subscription. Free tier, free key, no card. Total cost: $0.
    ```
 
 3. **Configure**:
+   Easiest: run the one-command setup (also does all yaml tuning and a
+   live key test):
    ```bash
-   cp .env.example .env
-   # put your Groq key in GROQ_API_KEY=
+   bash setup-free.sh
    ```
-   Then in `harvey.yaml`, set:
+   Or by hand: `cp .env.example .env`, put your Groq key in `GROQ_API_KEY=`,
+   and set in `harvey.yaml`:
    ```yaml
    brain:
      provider: groq
@@ -45,11 +47,10 @@ Groq's free tier has requests-per-minute and tokens-per-day caps. Edit
 `harvey.yaml` so Harvey stays polite and never burns through the caps:
 
 ```yaml
-runtime:
+usage:
   heartbeat_interval_minutes: 30   # default 15; halve the pace
-budget:
-  max_daily_calls: 80              # default 200; keep well under caps
-  max_daily_claude_percent: 100    # ignored by groq (no quota endpoint)
+  max_daily_claude_percent: 40      # groq has no quota endpoint, so this
+                                    # sets the call budget: 40% => 80 calls/day
 ```
 
 When Groq returns a rate-limit (HTTP 429), Harvey pauses model calls for
