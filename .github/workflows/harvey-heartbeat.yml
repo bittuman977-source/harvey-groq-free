@@ -95,7 +95,7 @@ jobs:
           # and only merge into the main .db on checkpoint. Force a checkpoint
           # so the tracked data/harvey.db file actually reflects this cycle.
           python3 -c "import sqlite3; sqlite3.connect('data/harvey.db').execute('PRAGMA wal_checkpoint(TRUNCATE)')"
-          git add data/harvey.db 2>/dev/null || true
+          git add -f data/harvey.db 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No state changes this cycle."
           else
