@@ -24,8 +24,8 @@ ChatGPT subscription. Free tier, free key, no card. Total cost: $0.
    ```yaml
    brain:
      provider: groq
-     # optional; empty = llama-3.3-70b-versatile
-     model: llama-3.3-70b-versatile
+     # optional; empty = openai/gpt-oss-120b
+     model: openai/gpt-oss-120b
    ```
    Also configure an email provider in `.env` (Gmail works free for
    testing; a cheap secondary-domain mailbox for real campaigns).

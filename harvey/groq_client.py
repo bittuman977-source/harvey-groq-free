@@ -17,7 +17,7 @@ import httpx
 
 logger = logging.getLogger("harvey.groq")
 
-DEFAULT_MODEL = "llama-3.3-70b-versatile"
+DEFAULT_MODEL = "openai/gpt-oss-120b"
 DEFAULT_BASE_URL = "https://api.groq.com/openai/v1"
 REQUEST_TIMEOUT = httpx.Timeout(connect=10.0, read=120.0, write=10.0, pool=10.0)
 
