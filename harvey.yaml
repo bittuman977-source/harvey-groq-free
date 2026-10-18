@@ -10,9 +10,9 @@ product:
   description: 'Northform is a full-service digital agency that builds fast, modern,
     conversion-focused websites, sets up business/workflow automation (CRM, forms,
     lead flows, integrations, AI-powered workflows), and creates brand-grade graphic
-    design (logos, social media creatives, marketing collateral). Best fit: small
-    and mid-size businesses and startups that need an agency-quality web presence
-    and streamlined operations without hiring in-house designers or developers.'
+    design (logos, social media creatives, marketing collateral). Best fit: B2B companies,
+    local businesses (salons, clinics, retail, gyms) and startups that need an agency-quality
+    web presence and streamlined operations without hiring in-house designers or developers.'
   pricing: Custom project quotes; websites typically start at $599 (about INR 50k);
     retainer options available
   key_benefits:
@@ -42,11 +42,12 @@ product:
     meeting_owner: Northform team
 icp:
   industries:
-  - Small Business
+  - B2B Services
+  - Local Businesses (salons, gyms, restaurants, clinics, retail shops)
   - Startups
-  - E-commerce
-  - Professional Services
-  - Real Estate
+  - Professional Services (consultants, law, accounting)
+  - E-commerce Brands
+  - Real Estate Agencies
   - Healthcare Clinics
   - Coaching & Education
   company_size: 1-50 employees
@@ -55,6 +56,7 @@ icp:
   - Co-Founder
   - CEO
   - Owner
+  - Managing Director
   - Marketing Manager
   - Operations Manager
   geography:
@@ -67,6 +69,7 @@ icp:
   - hiring marketing or operations roles
   - outdated website
   - no online booking
+  - expanding to new locations
 channels:
   email:
     enabled: true
