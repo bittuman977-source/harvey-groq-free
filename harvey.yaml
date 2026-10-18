@@ -16,8 +16,8 @@ product:
   objection_responses:
     too expensive: I understand budget is important. Most of our clients see ROI within
       30 days...
-    already have a solution: That makes sense. Curious — what's the one thing you
-      wish it did better?
+    already have a solution: "That makes sense. Curious \u2014 what's the one thing\
+      \ you wish it did better?"
     not interested: No worries at all. Mind if I ask what your current approach looks
       like?
   offer:

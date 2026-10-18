@@ -1,0 +1,101 @@
+# ============================================================
+# Harvey on GitHub Actions — the 100% free host.
+#
+# GitHub gives public repos free Actions minutes, so this workflow IS
+# the server: every 30 minutes it checks the repo out, runs exactly one
+# Harvey heartbeat cycle (`harvey run --cycles 1`), then commits
+# data/harvey.db back so the next cycle picks up where this one left
+# off. Your machine is never involved.
+#
+# One-time secrets (Settings → Secrets and variables → Actions):
+#   GROQ_API_KEY   your free gsk_... key from console.groq.com/keys
+#   (already configured for this repo)
+#
+# Until persona/product in harvey.yaml hold your real business info
+# (company, product, offer, ICP), runs pause gracefully with a note —
+# fill them in (edit harvey.yaml on GitHub) and cycles start for real.
+#
+# Trigger it manually any time from the Actions tab ("Run workflow").
+# ============================================================
+name: harvey-heartbeat
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # every 30 minutes, UTC
+  workflow_dispatch:          # manual "Run workflow" button
+
+permissions:
+  contents: write             # commit the state DB back after each cycle
+
+concurrency:
+  group: harvey-cycle         # never two cycles at once
+  cancel-in-progress: false
+
+jobs:
+  cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Preflight — is the business config filled in?
+        id: config
+        run: |
+          python3 - <<'EOF'
+          import yaml
+          cfg = yaml.safe_load(open("harvey.yaml"))
+          persona = (cfg.get("persona") or {})
+          product = (cfg.get("product") or {})
+          placeholders = [persona.get("company") == "Your Company",
+                         not str(product.get("description", "")).strip(),
+                         "Describe what" in str(product.get("description", ""))]
+          if any(placeholders):
+              print("skip=true")
+              print("::warning::Harvey is hosted and ready, but harvey.yaml still has placeholder business info (company/product). Fill persona + product in harvey.yaml and cycles will run for real.")
+          else:
+              print("skip=false")
+          EOF
+
+      - name: Install Harvey
+        if: steps.config.outputs.skip != 'true'
+        run: pip install -e .
+
+      - name: Write .env from secrets
+        if: steps.config.outputs.skip != 'true'
+        run: |
+          if [ -z "${{ secrets.GROQ_API_KEY }}" ]; then
+            echo "::error::GROQ_API_KEY secret is not set. Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          cp .env.example .env
+          sed -i "s|^GROQ_API_KEY=.*|GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}|" .env
+
+      - name: Run one heartbeat cycle
+        if: steps.config.outputs.skip != 'true'
+        run: harvey run --cycles 1
+
+      - name: Persist state (commit the DB back)
+        if: steps.config.outputs.skip != 'true'
+        run: |
+          git config user.name "harvey-bot"
+          git config user.email "actions@github.com"
+          git add data/harvey.db 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No state changes this cycle."
+          else
+            git commit -m "state: post-cycle $(date -u +'%Y-%m-%d %H:%M') UTC"
+            git push
+            echo "State committed."
+          fi
+
+      - name: Notice — waiting for business info
+        if: steps.config.outputs.skip == 'true'
+        run: |
+          echo "Harvey is hosted on GitHub and awake, but paused:"
+          echo "harvey.yaml still has placeholder company/product info."
+          echo "Edit persona + product + icp in harvey.yaml (on GitHub),"
+          echo "then the next scheduled cycle starts selling for real."

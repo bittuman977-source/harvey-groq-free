@@ -128,7 +128,7 @@ def cmd_run(args):
     """Start Harvey's heartbeat loop."""
     from harvey.main import main
 
-    main()
+    main(max_cycles=args.cycles)
 
 
 def cmd_train(args):
@@ -676,6 +676,8 @@ def main():
 
     # harvey run
     sub = subparsers.add_parser("run", help="Start Harvey's heartbeat loop")
+    sub.add_argument("--cycles", type=int, default=None, metavar="N",
+                     help="Exit cleanly after N cycles (default: run forever)")
     sub.set_defaults(func=cmd_run)
 
     # harvey train <url>

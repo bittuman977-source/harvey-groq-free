@@ -155,8 +155,12 @@ async def _interruptible_sleep(seconds: float, stop_event: asyncio.Event) -> boo
         return False
 
 
-async def heartbeat(stop_event: asyncio.Event | None = None):
-    """Harvey's main loop. Wakes up, decides, acts, sleeps. Repeat."""
+async def heartbeat(stop_event: asyncio.Event | None = None, max_cycles: int | None = None):
+    """Harvey's main loop. Wakes up, decides, acts, sleeps. Repeat.
+
+    max_cycles: exit cleanly after N complete cycles (used by `harvey run
+    --cycles N`, e.g. running one cycle per GitHub Actions trigger).
+    """
     if stop_event is None:
         stop_event = asyncio.Event()
 
@@ -199,6 +203,7 @@ async def heartbeat(stop_event: asyncio.Event | None = None):
     interval = config.usage.heartbeat_interval_minutes * 60
     max_calls = max(int(200 * (config.usage.max_daily_claude_percent / 100)), 1)
     consecutive_errors = 0
+    cycles_done = 0
 
     while not stop_event.is_set():
         try:
@@ -326,7 +331,13 @@ async def heartbeat(stop_event: asyncio.Event | None = None):
 
             consecutive_errors = 0
 
-            # 7. Sleep until next heartbeat
+            # 7. Sleep until next heartbeat (or exit if this run asked for
+            # a fixed number of cycles, e.g. scheduled CI)
+            if max_cycles is not None:
+                cycles_done += 1
+                if cycles_done >= max_cycles:
+                    logger.info(f"Cycle complete. max_cycles={max_cycles} reached — exiting.")
+                    break
             logger.info(
                 f"Cycle complete. Sleeping for {config.usage.heartbeat_interval_minutes} minutes."
             )
@@ -385,7 +396,7 @@ def _needs_setup() -> bool:
     return False
 
 
-async def _run_with_signals():
+async def _run_with_signals(max_cycles: int | None = None):
     """Run the heartbeat with SIGINT/SIGTERM wired to a graceful shutdown."""
     stop_event = asyncio.Event()
     loop = asyncio.get_running_loop()
@@ -404,10 +415,10 @@ async def _run_with_signals():
             # Windows / non-main-thread fallback
             signal.signal(sig, lambda s, f: _request_shutdown(signal.Signals(s).name))
 
-    await heartbeat(stop_event)
+    await heartbeat(stop_event, max_cycles=max_cycles)
 
 
-def main():
+def main(max_cycles: int | None = None):
     """Entry point."""
     # Check for first-time setup
     if _needs_setup():
@@ -417,7 +428,7 @@ def main():
         return
 
     try:
-        asyncio.run(_run_with_signals())
+        asyncio.run(_run_with_signals(max_cycles))
     except KeyboardInterrupt:
         logger.info("Goodbye.")
 
