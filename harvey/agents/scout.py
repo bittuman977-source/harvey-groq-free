@@ -357,7 +357,9 @@ class Scout:
         resp = await self._fetch(
             "https://google.serper.dev/search",
             method="POST",
-            json_body={"q": query, "num": MAX_RESULTS_PER_QUERY},
+            # Serper free accounts reject site:-style queries with num > 10
+            # ("Query pattern not allowed for free accounts") — keep 10.
+            json_body={"q": query, "num": 10},
             headers={"X-API-KEY": api_key, "Content-Type": "application/json"},
             retries=2,
         )
