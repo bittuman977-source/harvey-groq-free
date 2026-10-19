@@ -209,6 +209,16 @@ async def heartbeat(stop_event: asyncio.Event | None = None, max_cycles: int | N
         try:
             # 1. Check quiet hours
             if in_quiet_hours(config):
+                if max_cycles is not None:
+                    # CI mode (harvey run --cycles N): the scheduler will
+                    # trigger the next run anyway — sleeping here just wedges
+                    # the job until its step timeout. Exit cleanly instead;
+                    # cycles resume when quiet hours end.
+                    logger.info(
+                        "Quiet hours and max_cycles set — exiting now; the next "
+                        "scheduled run picks up after quiet hours end."
+                    )
+                    break
                 sleep_for = seconds_until_quiet_hours_end(config)
                 logger.info(f"Quiet hours. Sleeping for {sleep_for // 60} minutes.")
                 # Sleep in short polled chunks rather than one multi-hour

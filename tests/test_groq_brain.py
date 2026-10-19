@@ -209,3 +209,38 @@ async def test_stale_pause_cleared_when_key_present():
     stored = json.loads(brain.state.settings[BRAIN_STATUS_KEY])
     assert stored["status"] == "ok"
     assert brain.paused_reason == ""
+
+
+@pytest.mark.asyncio
+async def test_ci_mode_exits_immediately_in_quiet_hours(monkeypatch):
+    """`harvey run --cycles 1` during quiet hours must exit cleanly instead
+    of sleeping for hours and wedging the CI job until step timeout."""
+    import asyncio
+    import harvey.main as main_mod
+
+    class StopLoop(Exception):
+        pass
+
+    class FakeBrain:
+        provider, provider_label, model = "groq", "Groq", "test"
+        def __init__(self, *a, **kw): pass
+        async def preflight(self): return ""
+
+    class FakeState:
+        def __init__(self, *a, **kw): pass
+        async def init_db(self): pass
+
+    monkeypatch.setattr(main_mod, "Brain", FakeBrain)
+    monkeypatch.setattr(main_mod, "StateManager", FakeState)
+    monkeypatch.setattr(main_mod, "in_quiet_hours", lambda cfg: True)
+    # If the quiet-hours branch fails to break, the loop would call this.
+    async def explode(*a, **kw):
+        raise StopLoop
+    monkeypatch.setattr(main_mod, "decide_next_action", explode)
+
+    stop = asyncio.Event()
+    try:
+        await main_mod.heartbeat(stop, max_cycles=1)
+    except StopLoop:
+        pytest.fail("heartbeat did not exit at quiet hours; it tried to run agents")
+    # Clean return = the CI quiet-hours exit worked.
